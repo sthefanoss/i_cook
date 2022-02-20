@@ -1,24 +1,54 @@
+import 'dart:math';
+
 import 'package:i_cook/models/market.dart';
 import 'package:i_cook/models/recipe.dart';
 
 abstract class Repository {
-  List<Recipe> getRecipies(int quantity);
-  List<Market> getMarkets(Recipe recipe);
+  List<Recipe> getRecipies([int quantity = 0]);
+  List<String> getIgredients();
+  List<Market> getMarkets();
 }
 
 class RepositoryImpl implements Repository {
   late final List<Recipe> _recipies;
-  late final List<Market> _market;
+  late final List<String> _marketNames;
 
   @override
-  List<Recipe> getRecipies(int quantity) {
-    final foo = [..._recipies]..shuffle();
-    return foo.sublist(0, quantity);
+  List<Recipe> getRecipies([int quantity = 0]) {
+    final shuffledData = [..._recipies]..shuffle();
+    if (quantity == 0) {
+      return shuffledData;
+    }
+
+    return shuffledData.sublist(0, quantity);
   }
 
   @override
-  List<Market> getMarkets(Recipe recipe) {
-    return [];
+  List<String> getIgredients() {
+    final _list = <String>[];
+    RepositoryImpl().getRecipies().forEach((element) {
+      element.ingredients.forEach((key, value) {
+        if (!_list.contains(key)) _list.add(key);
+      });
+    });
+    _list.sort();
+    return _list;
+  }
+
+  @override
+  List<Market> getMarkets() {
+    final _random = Random(0);
+    final ingredients = getIgredients();
+    print(ingredients.length);
+    return _marketNames.map<Market>((name) {
+      int itensQuantity = 60 + _random.nextInt(20);
+      final products = <String, double>{};
+      for (int i = 0; i < itensQuantity && i < ingredients.length; i++) {
+        final product = ingredients[_random.nextInt(ingredients.length)];
+        products[product] = 10 + 10 * _random.nextDouble();
+      }
+      return Market(name: name, products: products);
+    }).toList();
   }
 
   RepositoryImpl() {
@@ -48,9 +78,178 @@ class RepositoryImpl implements Repository {
         },
       ),
       Recipe(
+        name: 'Vinagrete de Polvo',
+        ingredients: {
+          'polvo': 3,
+          'cebola': 1,
+          'tomate': 1,
+          'azeite': 1,
+          'coentro': 1,
+        },
+      ),
+      Recipe(
+        name: 'Salada de Batata',
+        ingredients: {
+          'maionese': 3,
+          'batata': 5,
+          'cenoura': 1,
+          'cebola': 1,
+          'mostarda': 1,
+          'ovo': 1,
+        },
+      ),
+      Recipe(
+        name: 'Arroz de Pato',
+        ingredients: {
+          'pato': 1,
+          'arroz': 1,
+          'azeitona preta': 1,
+          'linguiça calabresa': 1,
+          'cebola': 1,
+        },
+      ),
+      Recipe(
+        name: 'Risoto Milanês',
+        ingredients: {
+          'arroz': 3,
+          'caldo de legumes': 1,
+          'queijo': 1,
+          'mainteiga': 1,
+          'açafrão': 1,
+          'cebola': 1,
+        },
+      ),
+      Recipe(
+        name: 'Feijoada',
+        ingredients: {
+          'feijão preto': 3,
+          'cebola': 2,
+          'alho': 5,
+          'carne seca': 1,
+          'lombo defumado': 1,
+          'linguiça paio': 1,
+          'linguiça calabresa': 1,
+          'costela defumada': 1,
+          'orelha salgada': 1,
+          'arroz': 1,
+          'laranja seleta': 1,
+          'couve mineira': 1,
+        },
+      ),
+      Recipe(
+        name: 'Camarão com Chuchú',
+        ingredients: {
+          'camarão': 1,
+          'chuchú': 1,
+          'tomate': 1,
+          'cebola': 1,
+          'salsinha': 1,
+        },
+      ),
+      Recipe(
+        name: 'Paella Valenciana',
+        ingredients: {
+          'peito de frango': 3,
+          'linguiça calabresa': 1,
+          'arroz': 1,
+          'paelleiro': 1,
+          'camarão': 1,
+          'mexilhão': 1,
+          'ervilha em lata': 1,
+          'cebola': 1,
+          'alho': 1,
+          'pimentão vermelho': 1,
+        },
+      ),
+      Recipe(
+        name: 'Bife de Chorizo',
+        ingredients: {
+          'bife chorizo': 2,
+          'cebola': 1,
+          'pimentão': 1,
+          'azeite': 1,
+          'coentro': 1,
+        },
+      ),
+      Recipe(
+        name: 'Farofa de Banana com Ovo',
+        ingredients: {
+          'farinha de mandioca': 1,
+          'cebola': 1,
+          'ovo': 1,
+          'banana': 1,
+          'manteiga': 1,
+        },
+      ),
+      Recipe(
+        name: 'Sunomono',
+        ingredients: {
+          'pepino': 3,
+          'açúcar': 1,
+          'vinagre de arroz': 1,
+          'gergelim preto': 1,
+          'gergelim branco': 1,
+          'kani': 1,
+        },
+      ),
+      Recipe(
+        name: 'Tabule',
+        ingredients: {
+          'trigo de kibe': 1,
+          'cebola': 1,
+          'tomate': 1,
+          'pepino': 1,
+          'hortelâ': 1,
+        },
+      ),
+      Recipe(
+        name: 'Salada De Ovo',
+        ingredients: {
+          'ovo': 6,
+          'maionese': 1,
+          'cebola': 1,
+          'salsinha': 1,
+        },
+      ),
+      Recipe(
+        name: 'Salada De Atum',
+        ingredients: {
+          'atum em lata': 6,
+          'maionese': 1,
+          'cebola': 1,
+          'salsinha': 1,
+        },
+      ),
+      Recipe(
+        name: 'Salada Grega',
+        ingredients: {
+          'pepino': 1,
+          'tomate': 1,
+          'azeitona preta': 1,
+          'queijo': 1,
+        },
+      ),
+      Recipe(
+        name: 'Hummus Tahine',
+        ingredients: {
+          'hummus': 1,
+          'tahine': 1,
+          'alho': 1,
+        },
+      ),
+      Recipe(
+        name: 'Tzik Tzak',
+        ingredients: {
+          'yogurte': 3,
+          'alho': 1,
+          'pepino': 1,
+          'sal': 1,
+        },
+      ),
+      Recipe(
         name: 'Babaganush',
         ingredients: {
-          'beringela': 3,
+          'berinjela': 3,
           'alho': 1,
           'coentro': 1,
           'sal': 1,
@@ -134,9 +333,18 @@ class RepositoryImpl implements Repository {
         },
       ),
       Recipe(
+        name: 'Spaggetti Carbonara',
+        ingredients: {
+          'ovo': 3,
+          'bacon': 1,
+          'spaggetti': 1,
+          'salsinha': 1,
+        },
+      ),
+      Recipe(
         name: 'Torta de frango',
         ingredients: {
-          'ovos': 2,
+          'ovo': 2,
           'leite': 2,
           'óleo': 1,
           'queijo ralado': 1,
@@ -144,267 +352,43 @@ class RepositoryImpl implements Repository {
           'fermento': 1,
         },
       ),
+      Recipe(
+        name: 'Fusilli a la Melanzanna',
+        ingredients: {
+          'fuzzili': 1,
+          'berinjela': 2,
+          'azeite': 1,
+          'alho': 1,
+          'cebola': 2,
+          'salsinha': 1,
+        },
+      ),
+      Recipe(
+        name: 'Salpicão de Frango Defumado',
+        ingredients: {
+          'peito de frango': 1,
+          'maionese': 2,
+          'repolho': 1,
+          'cebola': 1,
+          'maçã': 2,
+          'cenoura': 1,
+          'milho em lata': 1,
+        },
+      ),
     ];
 
-    _market = [
-      Market(
-        name: 'Pão de Açúcar',
-        products: {
-          'creme de leite': 8.5,
-          'limão': 12,
-          'batata': 12,
-          'coentro': 6.0,
-          'óleo': 14,
-          'queijo ralado': 14,
-          'alecrim': 11,
-          'beringela': 11,
-          'pimenta jalapeno': 14,
-          'file de linguado': 8.4,
-          'cabola': 12,
-          'pimenta do reino': 14,
-          'leite': 15,
-        },
-      ),
-      Market(
-        name: 'Zona Sul',
-        products: {
-          'abacate': 8.5,
-          'ovo': 11,
-          'oleo de girassol': 10,
-          'milho crocante': 9.3,
-          'azeite': 8.9,
-          'batata': 11,
-          'batata palha': 7.0,
-          'cominho': 12,
-          'alecrim': 9.6,
-          'limão': 6.5,
-          'carne moida': 14,
-          'salvia': 9.9,
-          'lagarto redondo': 14,
-          'file de linguado': 12,
-          'alho': 7.1,
-          'leite': 7.4,
-          'tomate': 12,
-          'ovos': 14,
-          'coentro fresco': 5.2,
-          'farinha de trigo': 5.0,
-        },
-      ),
-      Market(
-        name: 'Super Market',
-        products: {
-          'salvia': 7.0,
-          'lagarto redondo': 5.2,
-          'ovos': 13,
-          'fermento': 7.0,
-          'beringela': 12,
-          'pimenta do reino': 9.5,
-          'manteiga': 12,
-          'coentro fresco': 12,
-          'cebola roxa': 12,
-          'molho de tomate': 10,
-          'abacate': 8.7,
-          'coentro': 6.5,
-          'pimenta jalapeno': 5.4,
-          'batata palha': 14,
-          'oleo de girassol': 11,
-          'tomilho': 13,
-          'cogumelo': 8.3,
-          'file de linguado': 8.2,
-          'alho': 6.5,
-          'patinho': 5.1,
-          'milho crocante': 15,
-        },
-      ),
-      Market(
-        name: 'Carrefour',
-        products: {
-          'fermento': 8.3,
-          'leite': 7.8,
-          'cebola roxa': 7.3,
-          'peito de frango': 13,
-          'file de linguado': 11,
-          'carne moida': 11,
-          'molho de tomate': 12,
-          'lagarto redondo': 7.8,
-          'coentro fresco': 13,
-          'cogumelo': 12,
-          'ovos': 11,
-          'farinha de rosca': 6.9,
-          'cebola': 12,
-          'óleo': 10,
-          'milho crocante': 7.9,
-          'cabola': 6.2,
-          'abacate': 12,
-          'tomilho': 5.1,
-        },
-      ),
-      Market(
-        name: 'Rede Economia',
-        products: {
-          'beringela': 13,
-          'limão': 11,
-          'cabola': 5.3,
-          'molho de tomate': 14,
-          'manteiga': 7.7,
-          'salvia': 8.1,
-          'ovos': 8.3,
-          'peito de frango': 14,
-          'farinha de trigo': 14,
-          'carne moida': 8.0,
-          'tomilho': 12,
-          'alho': 11,
-          'cominho': 11,
-          'pimenta do reino': 13,
-          'patinho': 14,
-          'lagarto redondo': 7.1,
-          'farinha de rosca': 15,
-          'pernil suino': 13,
-          'coentro fresco': 11,
-          'alecrim': 12,
-          'leite': 11,
-        },
-      ),
-      Market(
-        name: 'Assaí',
-        products: {
-          'coentro fresco': 12,
-          'salvia': 5.8,
-          'coentro': 12,
-          'cabola': 9.7,
-          'lagarto redondo': 15,
-          'batata palha': 7.6,
-          'manteiga': 13,
-          'leite': 14,
-          'alho': 15,
-          'farinha de trigo': 5.6,
-          'sal': 14,
-          'alecrim': 8.1,
-          'batata': 10,
-          'tomate': 7.4,
-          'carne moida': 6.7,
-          'beringela': 15,
-          'abacate': 12,
-        },
-      ),
-      Market(
-        name: 'Seu Zé',
-        products: {
-          'cabola': 10,
-          'coentro fresco': 8.8,
-          'alecrim': 9.1,
-          'lagarto redondo': 14,
-          'tomilho': 12,
-          'peito de frango': 5.1,
-          'limão': 14,
-          'tomate': 12,
-          'molho de tomate': 12,
-          'cebola roxa': 14,
-          'manteiga': 5.3,
-          'creme de leite': 7.1,
-          'abacate': 5.5,
-          'leite': 6.4,
-          'beringela': 15,
-          'file de linguado': 15,
-          'pimenta': 6.2,
-          'batata palha': 6.7,
-          'salvia': 11,
-        },
-      ),
-      Market(
-        name: 'Varejão',
-        products: {
-          'farinha de rosca': 8.4,
-          'milho crocante': 13,
-          'alecrim': 8.2,
-          'pernil suino': 11,
-          'carne moida': 12,
-          'beringela': 8.4,
-          'batata palha': 11,
-          'patinho': 11,
-          'molho de tomate': 7.5,
-          'pimenta jalapeno': 8.2,
-          'cebola roxa': 11,
-          'file de linguado': 9.0,
-          'ovo': 15,
-          'farinha de trigo': 5.9,
-          'creme de leite': 5.9,
-          'pimenta': 9.8,
-          'coentro': 10,
-          'manteiga': 6.8,
-          'sal': 12,
-        },
-      ),
-      Market(
-        name: 'Hortifruti',
-        products: {
-          'cominho': 13,
-          'oleo de girassol': 12,
-          'milho crocante': 11,
-          'pimenta jalapeno': 12,
-          'tomilho': 8.7,
-          'coentro fresco': 15,
-          'pimenta do reino': 6.8,
-          'ovos': 14,
-          'cogumelo': 6.2,
-          'leite': 7.4,
-          'alecrim': 14,
-          'coentro': 12,
-          'beringela': 11,
-          'batata': 5.6,
-          'tomate': 10,
-          'pimenta': 11,
-          'cebola roxa': 14,
-        },
-      ),
-      Market(
-        name: 'SuPertinho',
-        products: {
-          'carne moida': 13,
-          'óleo': 11,
-          'tomate': 13,
-          'manteiga': 14,
-          'beringela': 7.8,
-          'limão': 14,
-          'oleo de girassol': 10,
-          'leite': 13,
-          'molho de tomate': 9.7,
-          'pimenta jalapeno': 8.4,
-          'fermento': 7.2,
-          'coentro fresco': 11,
-          'cebola roxa': 13,
-          'sal': 10,
-          'queijo ralado': 12,
-          'alecrim': 9.9,
-          'farinha de trigo': 6.4,
-          'lagarto redondo': 13,
-          'peito de frango': 8.7,
-          'ovos': 10,
-        },
-      ),
-      Market(
-        name: 'Baratão',
-        products: {
-          'tomilho': 14,
-          'cebola roxa': 12,
-          'tomate': 11,
-          'pimentão': 8.5,
-          'coentro': 11,
-          'molho de tomate': 5.6,
-          'queijo ralado': 6.2,
-          'manteiga': 11,
-          'cebola': 11,
-          'oleo de girassol': 8.7,
-          'lagarto redondo': 7.1,
-          'limão': 9.7,
-          'coentro fresco': 14,
-          'batata': 13,
-          'pimenta jalapeno': 12,
-          'cominho': 14,
-          'ovo': 7.3,
-          'salvia': 11,
-        },
-      ),
+    _marketNames = [
+      'Pão de Açúcar',
+      'Zona Sul',
+      'Super Market',
+      'Carrefour',
+      'Rede Economia',
+      'Assaí',
+      'Seu Zé',
+      'Varejão',
+      'Hortifruti',
+      'SuPertinho',
+      'Baratão',
     ];
   }
 }

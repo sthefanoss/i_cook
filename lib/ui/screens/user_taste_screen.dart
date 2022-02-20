@@ -13,17 +13,23 @@ class UserTasteScreen extends StatefulWidget {
 
 class _UserTasteScreenState extends State<UserTasteScreen> {
   late final List<Recipe> options;
-  int? favoriteRecipe;
+  late final List<bool> isFavorite;
+  final int length = 6;
 
   @override
   void initState() {
-    options = RepositoryImpl().getRecipies(4);
+    options = RepositoryImpl().getRecipies(length);
+    isFavorite = List.filled(length, false);
 
     super.initState();
   }
 
   void toNextScreen() {
-    Get.toNamed('/ingredients', arguments: options[favoriteRecipe!]);
+    final favoriteState = <String, bool>{};
+    for (int i = 0; i < length; i++) {
+      favoriteState[options[i].name] = isFavorite[i];
+    }
+    Get.toNamed('/ingredients', arguments: favoriteState);
   }
 
   @override
@@ -53,10 +59,10 @@ class _UserTasteScreenState extends State<UserTasteScreen> {
                 final recipe = options[index];
                 return ListTile(
                   title: Text(recipe.name),
-                  selected: index == favoriteRecipe,
+                  selected: isFavorite[index],
                   onTap: () {
                     setState(() {
-                      favoriteRecipe = index;
+                      isFavorite[index] = !isFavorite[index];
                     });
                   },
                 );
@@ -66,7 +72,7 @@ class _UserTasteScreenState extends State<UserTasteScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-                onPressed: toNextScreen, child: Text('Confirmar  ')),
+                onPressed: toNextScreen, child: Text('Confirmar')),
           ),
         ],
       ),

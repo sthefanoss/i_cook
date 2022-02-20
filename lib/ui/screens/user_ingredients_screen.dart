@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:i_cook/data/repository.dart';
 import 'package:i_cook/models/recipe.dart';
+import 'package:ml_algo/ml_algo.dart' as algo;
+import 'package:ml_dataframe/ml_dataframe.dart' as dataframe;
+import 'package:ml_preprocessing/ml_preprocessing.dart' as processing;
 
 class UserIngredientsScreen extends StatefulWidget {
   const UserIngredientsScreen({Key? key}) : super(key: key);
@@ -10,14 +14,17 @@ class UserIngredientsScreen extends StatefulWidget {
 }
 
 class _UserIngredientsScreenState extends State<UserIngredientsScreen> {
-  late final Recipe favoriteRecipe;
+  late final Map<String, bool> favoriteRecipies;
   final quantities = <String, int>{};
-  final ingredientsKeys = ingredients.keys.toList();
+  late final List<String> ingredients;
 
   @override
   void initState() {
-    favoriteRecipe = Get.arguments;
-    ingredients.entries.forEach((i) => quantities[i.key] = 0);
+    favoriteRecipies = Get.arguments;
+    ingredients = RepositoryImpl().getIgredients();
+    ingredients.forEach((i) {
+      quantities[i] = 0;
+    });
     super.initState();
   }
 
@@ -47,7 +54,7 @@ class _UserIngredientsScreenState extends State<UserIngredientsScreen> {
             child: ListView.builder(
               itemCount: quantities.length,
               itemBuilder: (context, index) {
-                final ingredient = ingredientsKeys[index];
+                final ingredient = ingredients[index];
                 final quantity = quantities[ingredient]!;
                 return ListTile(
                   title: Row(
@@ -73,10 +80,82 @@ class _UserIngredientsScreenState extends State<UserIngredientsScreen> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(onPressed: () {}, child: Text('Confirmar  ')),
+            child: ElevatedButton(
+                onPressed: findSuggestions, child: Text('Avançar')),
           ),
         ],
       ),
     );
+  }
+
+  void findSuggestions() {
+    final favoriteKeys = favoriteRecipies.keys.toList();
+    // print(favoriteKeys);
+
+    final _trainingDataSet = RepositoryImpl()
+        .getRecipies()
+        .where((r) => favoriteKeys.indexWhere((f) => r.name == f) != -1)
+        .map(
+          (recipe) => List<int>.generate(
+            ingredients.length + 1,
+            (index) {
+              if (index == ingredients.length) {
+                final isFavorited = favoriteRecipies[recipe.name]!;
+
+                return isFavorited ? 1 : 0;
+              }
+              return recipe.ingredients[ingredients[index]] ?? 0;
+            },
+          ),
+        );
+    //  print(_trainingDataSet);
+    final _trainRecipies = RepositoryImpl()
+        .getRecipies()
+        .where((r) => favoriteKeys.indexWhere((f) => r.name == f) == -1)
+        .toList();
+
+    final _outputDataSet = _trainRecipies.map(
+      (recipe) => List<int>.generate(
+        ingredients.length + 1,
+        (index) {
+          if (index == ingredients.length) {
+            return 0;
+          }
+          return recipe.ingredients[ingredients[index]] ?? 0;
+        },
+      ),
+    );
+
+    final _trainingDataframe = dataframe.DataFrame(
+      [
+        [...ingredients, 'isFavorite'],
+        ..._trainingDataSet,
+      ],
+      columnNames: [...ingredients, 'isFavorite'],
+    );
+
+    final _outputDataFrame = dataframe.DataFrame(
+      [
+        [...ingredients, 'isFavorite'],
+        ..._outputDataSet,
+      ],
+      columnNames: [...ingredients],
+    );
+
+    final classifier = algo.KnnRegressor(
+      _trainingDataframe,
+      'isFavorite',
+      5,
+    );
+
+    final prediction = classifier.predict(_outputDataFrame);
+    final suggestions = <ScoredRecipe>[];
+    final rows = prediction.rows.toList();
+    for (int i = 0; i < prediction.rows.length; i++) {
+      suggestions.add(ScoredRecipe.fromRecipe(
+          recipe: _trainRecipies[i], score: rows[i].first));
+    }
+    suggestions.sort((a, b) => b.score.compareTo(a.score));
+    Get.toNamed('/suggestions', arguments: [quantities, suggestions]);
   }
 }
