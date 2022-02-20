@@ -24,4 +24,31 @@ class ScoredRecipe extends Recipe {
 
   @override
   String toString() => 'ScoredRecipe($name,$score)';
+
+  List<String> get industrializedIngredients => [
+        'arroz',
+        'atum em lata',
+        'azeite',
+        'azeitona preta',
+        'açafrão',
+        'açúcar',
+        'bacon',
+        'batata palha',
+        'caldo de legumes',
+        'carne seca',
+        'coentro',
+        'cogumelo',
+        'creme de leite',
+        'farinha de mandioca',
+        'farinha de rosca',
+        'farinha de trigo',
+        'gergelim branco',
+        'gergelim preto',
+        'leite',
+        'milho em lata',
+        'molho de tomate',
+        'peito de frango',
+        'queijo ralado',
+        'óleo'
+      ];
 }

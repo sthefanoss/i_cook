@@ -14,7 +14,7 @@ class ShopScreen extends StatefulWidget {
 
 class _ShopScreenState extends State<ShopScreen> {
   late final Recipe recipe;
-  final _missingIngredients = <String, int>{};
+  late final Map<String, int> _missingIngredients;
   late final Map<String, int> _userQuantities;
   late final List<Market> _markets;
   late Market _selectedMarket;
@@ -23,22 +23,23 @@ class _ShopScreenState extends State<ShopScreen> {
   void initState() {
     recipe = Get.arguments[0];
     _userQuantities = Get.arguments[1];
-    _getMissingIngridients();
+    _missingIngredients = Get.arguments[2];
+    // _getMissingIngridients();
     _loadMarketData();
     super.initState();
   }
 
-  void _getMissingIngridients() {
-    recipe.ingredients.forEach((ingredient, quatity) {
-      // pior forma
-      //  int? userQuantity = _userQuantities[ingredient];
-      int userQuantity = _userQuantities[ingredient] ?? 0;
-      int difference = userQuantity - quatity;
-      if (difference < 0) {
-        _missingIngredients[ingredient] = -difference;
-      }
-    });
-  }
+  // void _getMissingIngridients() {
+  //   recipe.ingredients.forEach((ingredient, quatity) {
+  //     // pior forma
+  //     //  int? userQuantity = _userQuantities[ingredient];
+  //     int userQuantity = _userQuantities[ingredient] ?? 0;
+  //     int difference = userQuantity - quatity;
+  //     if (difference < 0) {
+  //       _missingIngredients[ingredient] = -difference;
+  //     }
+  //   });
+  // }
 
   void _loadMarketData() {
     _markets = RepositoryImpl().getMarkets();
@@ -55,23 +56,23 @@ class _ShopScreenState extends State<ShopScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back_ios_new),
+                  icon: const Icon(Icons.arrow_back_ios_new),
                   onPressed: Navigator.of(context).pop,
                   color: Colors.red,
                 ),
-                Expanded(
+                const Expanded(
                     child: Text(
                   'PEDIDO IFOOD MERCADO',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.w700),
                 )),
-                SizedBox(width: 40)
+                const SizedBox(width: 40)
               ],
             ),
             SizedBox(
               height: 130,
               child: ListView.builder(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 scrollDirection: Axis.horizontal,
                 itemCount: 10,
                 itemBuilder: (context, index) {
@@ -86,7 +87,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                                 height: 65,
                                 child: Icon(Icons.shop, color: Colors.red)),
                             Padding(
@@ -94,12 +95,12 @@ class _ShopScreenState extends State<ShopScreen> {
                                   const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 _markets[index].name,
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 '55-60 min',
                                 style: TextStyle(color: Colors.grey),
@@ -122,8 +123,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 14, left: 28, bottom: 23),
+            const Padding(
+              padding: EdgeInsets.only(top: 14, left: 28, bottom: 23),
               child: Text(
                 'Itens da Sacola',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
@@ -144,12 +145,12 @@ class _ShopScreenState extends State<ShopScreen> {
                     children: [
                       Row(
                         children: [
-                          SizedBox(width: 32),
-                          Icon(
+                          const SizedBox(width: 32),
+                          const Icon(
                             Icons.dining_rounded,
                             size: 40,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,7 +168,7 @@ class _ShopScreenState extends State<ShopScreen> {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 4, horizontal: 8),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
@@ -178,10 +179,10 @@ class _ShopScreenState extends State<ShopScreen> {
                                 ? _missingIngredients[ingredient].toString()
                                 : 'indisponível'),
                           ),
-                          SizedBox(width: 32),
+                          const SizedBox(width: 32),
                         ],
                       ),
-                      Padding(
+                      const Padding(
                           padding: EdgeInsets.only(left: 32, right: 32),
                           child: Divider()),
                     ],
@@ -189,13 +190,13 @@ class _ShopScreenState extends State<ShopScreen> {
                 },
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 32, right: 32),
               child: Divider(),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Padding(
-              padding: EdgeInsets.only(left: 32, right: 32),
+              padding: const EdgeInsets.only(left: 32, right: 32),
               child: Row(
                 children: [
                   Text('Disponíveis nesta loja'),
@@ -204,9 +205,9 @@ class _ShopScreenState extends State<ShopScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Padding(
-              padding: EdgeInsets.only(left: 32, right: 32),
+              padding: const EdgeInsets.only(left: 32, right: 32),
               child: Row(
                 children: [
                   Text('Indisponíveis nesta loja'),
@@ -215,15 +216,15 @@ class _ShopScreenState extends State<ShopScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Padding(
-              padding: EdgeInsets.only(left: 32, right: 32),
+              padding: const EdgeInsets.only(left: 32, right: 32),
               child: ElevatedButton(
                 onPressed: () {},
-                child: Text('Ver sacola'),
+                child: const Text('Ver sacola'),
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
           ],
         ),
       ),

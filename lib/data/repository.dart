@@ -4,18 +4,18 @@ import 'package:i_cook/models/market.dart';
 import 'package:i_cook/models/recipe.dart';
 
 abstract class Repository {
-  List<Recipe> getRecipies([int quantity = 0]);
-  List<String> getIgredients();
+  List<Recipe> getRecipes([int quantity = 0]);
+  List<String> getIngredients();
   List<Market> getMarkets();
 }
 
 class RepositoryImpl implements Repository {
-  late final List<Recipe> _recipies;
+  late final List<Recipe> _recipes;
   late final List<String> _marketNames;
 
   @override
-  List<Recipe> getRecipies([int quantity = 0]) {
-    final shuffledData = [..._recipies]..shuffle();
+  List<Recipe> getRecipes([int quantity = 0]) {
+    final shuffledData = [..._recipes]..shuffle();
     if (quantity == 0) {
       return shuffledData;
     }
@@ -24,9 +24,9 @@ class RepositoryImpl implements Repository {
   }
 
   @override
-  List<String> getIgredients() {
+  List<String> getIngredients() {
     final _list = <String>[];
-    RepositoryImpl().getRecipies().forEach((element) {
+    RepositoryImpl().getRecipes().forEach((element) {
       element.ingredients.forEach((key, value) {
         if (!_list.contains(key)) _list.add(key);
       });
@@ -38,8 +38,7 @@ class RepositoryImpl implements Repository {
   @override
   List<Market> getMarkets() {
     final _random = Random(0);
-    final ingredients = getIgredients();
-    print(ingredients.length);
+    final ingredients = getIngredients();
     return _marketNames.map<Market>((name) {
       int itensQuantity = 60 + _random.nextInt(20);
       final products = <String, double>{};
@@ -52,7 +51,7 @@ class RepositoryImpl implements Repository {
   }
 
   RepositoryImpl() {
-    _recipies = [
+    _recipes = [
       Recipe(
         name: 'Strogonoff de frango',
         ingredients: {
